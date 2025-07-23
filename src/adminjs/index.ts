@@ -1,0 +1,38 @@
+import AdminJS from 'adminjs'
+import AdminJSExpress from '@adminjs/express'
+import { Database, Resource, getModelByName } from '@adminjs/prisma'
+import prisma from '../database/prisma'
+
+
+AdminJS.registerAdapter({ Database, Resource })
+
+export const createAdminRouter = () => {
+  const admin = new AdminJS({
+    rootPath: '/admin',
+    branding: {
+      companyName: 'Racing Store',
+      logo: 'racing-store-transparent.png',
+      favicon: 'RS-logo.png',
+      theme: {
+        colors: {
+          primary100: '#D71A25',
+          primary80: '#D71A25',
+          primary60: '#D71A25',
+          primary40: '#D71A25',
+          primary20: '#D71A25',
+          grey100: '#151515',
+          grey80: '#333333',
+          grey60: '#4d4d4d',
+          grey40: '#666666',
+          grey20: '#dddddd',
+          filterBg: '#333333',
+          accent: '#151515',
+          hoverBg: '#151515',
+        }
+      }
+    }
+  })
+
+  const adminRouter = AdminJSExpress.buildRouter(admin)
+  return { admin, adminRouter }
+}
