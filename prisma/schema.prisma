@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -12,4 +6,153 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id          Int        @id @default(autoincrement())
+  nome        String
+  email       String     @unique
+  senha       String
+  telefone    String?
+  tipoUsuario UsuarioTipo @default(cliente)
+  criadoEm    DateTime   @default(now())
+
+  enderecos   Endereco[]
+  carrinho    Carrinho?
+  pedidos     Pedido[]
+  avaliacoes  Avaliacao[]
+}
+
+enum UsuarioTipo {
+  cliente
+  admin
+}
+
+model Endereco {
+  id          Int      @id @default(autoincrement())
+  usuarioId   Int
+  cep         String
+  rua         String
+  numero      String
+  complemento String?
+  cidade      String
+  estado      String
+  principal   Boolean  @default(false)
+
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+}
+
+model Categoria {
+  id       Int       @id @default(autoincrement())
+  nome     String
+  produtos Produto[]
+}
+
+model Produto {
+  id          Int         @id @default(autoincrement())
+  nome        String
+  descricao   String
+  preco       Float
+  estoque     Int
+  imagemUrl   String
+  ativo       Boolean     @default(true)
+  categoriaId Int
+
+  categoria   Categoria   @relation(fields: [categoriaId], references: [id])
+  itensCarrinho CarrinhoItem[]
+  itensPedido PedidoItem[]
+  avaliacoes  Avaliacao[]
+}
+
+model Carrinho {
+  id         Int           @id @default(autoincrement())
+  usuarioId  Int           @unique
+  criadoEm   DateTime      @default(now())
+
+  usuario    Usuario       @relation(fields: [usuarioId], references: [id])
+  itens      CarrinhoItem[]
+}
+
+model CarrinhoItem {
+  id          Int       @id @default(autoincrement())
+  carrinhoId  Int
+  produtoId   Int
+  quantidade  Int
+
+  carrinho    Carrinho  @relation(fields: [carrinhoId], references: [id])
+  produto     Produto   @relation(fields: [produtoId], references: [id])
+}
+
+model Pedido {
+  id           Int           @id @default(autoincrement())
+  usuarioId    Int
+  dataPedido   DateTime      @default(now())
+  status       PedidoStatus  @default(pendente)
+  total        Float
+  pagamentoId  String?
+
+  usuario      Usuario       @relation(fields: [usuarioId], references: [id])
+  itens        PedidoItem[]
+  pagamento    Pagamento?
+}
+
+enum PedidoStatus {
+  pendente
+  enviado
+  concluido
+  cancelado
+}
+
+model PedidoItem {
+  id         Int       @id @default(autoincrement())
+  pedidoId   Int
+  produtoId  Int
+  quantidade Int
+  precoUnit  Float
+
+  pedido     Pedido    @relation(fields: [pedidoId], references: [id])
+  produto    Produto   @relation(fields: [produtoId], references: [id])
+}
+
+model Pagamento {
+  id             Int       @id @default(autoincrement())
+  pedidoId       Int       @unique
+  metodo         String
+  status         PagamentoStatus
+  valor          Float
+  dataPagamento  DateTime?
+
+  pedido         Pedido    @relation(fields: [pedidoId], references: [id])
+}
+
+enum PagamentoStatus {
+  pago
+  pendente
+  cancelado
+}
+
+model Avaliacao {
+  id             Int       @id @default(autoincrement())
+  usuarioId      Int
+  produtoId      Int
+  nota           Int
+  comentario     String?
+  dataAvaliacao  DateTime  @default(now())
+
+  usuario        Usuario   @relation(fields: [usuarioId], references: [id])
+  produto        Produto   @relation(fields: [produtoId], references: [id])
+}
+
+model Cupom {
+  id         Int       @id @default(autoincrement())
+  codigo     String    @unique
+  tipo       CupomTipo
+  valor      Float
+  ativo      Boolean   @default(true)
+  validade   DateTime
+}
+
+enum CupomTipo {
+  percentual
+  fixo
 }
