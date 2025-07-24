@@ -1,19 +1,20 @@
-import express from "express"
-import { createAdminRouter } from "./adminjs"
-import prisma from "./database/prisma"
+import 'dotenv/config'
+import express from 'express'
+import { createAdminRouter } from './adminjs'
+import { getPrismaClient } from './database/prisma'
 
 const app = express()
+const PORT = process.env.PORT || 3000
 
 app.use(express.static('public'))
 app.use(express.json())
-
-const PORT = process.env.PORT || 3000
 
 const { admin, adminRouter } = createAdminRouter()
 app.use(admin.options.rootPath, adminRouter)
 
 app.listen(PORT, async () => {
   try {
+    const prisma = getPrismaClient()
     await prisma.$connect()
     console.log("DB connection successful")
   } catch (err) {

@@ -7,151 +7,151 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Usuario {
+model User {
   id          Int        @id @default(autoincrement())
-  nome        String
+  name        String
   email       String     @unique
-  senha       String
-  telefone    String?
-  tipoUsuario UsuarioTipo @default(cliente)
-  criadoEm    DateTime   @default(now())
+  password    String
+  phone       String?
+  role        UserRole   @default(customer)
+  createdAt   DateTime   @default(now())
 
-  enderecos   Endereco[]
-  carrinho    Carrinho?
-  pedidos     Pedido[]
-  avaliacoes  Avaliacao[]
+  addresses   Address[]
+  cart        Cart?
+  orders      Order[]
+  reviews     Review[]
 }
 
-enum UsuarioTipo {
-  cliente
-  admin
+enum UserRole {
+  customer @map("cliente")
+  admin    @map("administrador")
 }
 
-model Endereco {
+model Address {
   id          Int      @id @default(autoincrement())
-  usuarioId   Int
-  cep         String
-  rua         String
-  numero      String
-  complemento String?
-  cidade      String
-  estado      String
-  principal   Boolean  @default(false)
+  userId      Int
+  zipCode     String
+  street      String
+  number      String
+  complement  String?
+  city        String
+  state       String
+  isPrimary   Boolean  @default(false)
 
-  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
 }
 
-model Categoria {
+model Category {
   id       Int       @id @default(autoincrement())
-  nome     String
-  produtos Produto[]
+  name     String
+  products Product[]
 }
 
-model Produto {
-  id          Int         @id @default(autoincrement())
-  nome        String
-  descricao   String
-  preco       Float
-  estoque     Int
-  imagemUrl   String
-  ativo       Boolean     @default(true)
-  categoriaId Int
+model Product {
+  id            Int           @id @default(autoincrement())
+  name          String
+  description   String
+  price         Float
+  stock         Int
+  imageUrl      String
+  isActive      Boolean       @default(true)
+  categoryId    Int
 
-  categoria   Categoria   @relation(fields: [categoriaId], references: [id])
-  itensCarrinho CarrinhoItem[]
-  itensPedido PedidoItem[]
-  avaliacoes  Avaliacao[]
+  category      Category      @relation(fields: [categoryId], references: [id])
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+  reviews       Review[]
 }
 
-model Carrinho {
-  id         Int           @id @default(autoincrement())
-  usuarioId  Int           @unique
-  criadoEm   DateTime      @default(now())
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    Int        @unique
+  createdAt DateTime   @default(now())
 
-  usuario    Usuario       @relation(fields: [usuarioId], references: [id])
-  itens      CarrinhoItem[]
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
 }
 
-model CarrinhoItem {
-  id          Int       @id @default(autoincrement())
-  carrinhoId  Int
-  produtoId   Int
-  quantidade  Int
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  cartId    Int
+  productId Int
+  quantity  Int
 
-  carrinho    Carrinho  @relation(fields: [carrinhoId], references: [id])
-  produto     Produto   @relation(fields: [produtoId], references: [id])
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
 }
 
-model Pedido {
+model Order {
   id           Int           @id @default(autoincrement())
-  usuarioId    Int
-  dataPedido   DateTime      @default(now())
-  status       PedidoStatus  @default(pendente)
+  userId       Int
+  orderDate    DateTime      @default(now())
+  status       OrderStatus   @default(pending)
   total        Float
-  pagamentoId  String?
+  paymentId    String?
 
-  usuario      Usuario       @relation(fields: [usuarioId], references: [id])
-  itens        PedidoItem[]
-  pagamento    Pagamento?
+  user         User          @relation(fields: [userId], references: [id])
+  items        OrderItem[]
+  payment      Payment?
 }
 
-enum PedidoStatus {
-  pendente
-  enviado
-  concluido
-  cancelado
+enum OrderStatus {
+  pending   @map("pendente")
+  shipped   @map("enviado")
+  completed @map("concluido")
+  canceled  @map("cancelado")
 }
 
-model PedidoItem {
-  id         Int       @id @default(autoincrement())
-  pedidoId   Int
-  produtoId  Int
-  quantidade Int
-  precoUnit  Float
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  productId  Int
+  quantity   Int
+  unitPrice  Float
 
-  pedido     Pedido    @relation(fields: [pedidoId], references: [id])
-  produto    Produto   @relation(fields: [produtoId], references: [id])
+  order      Order    @relation(fields: [orderId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id])
 }
 
-model Pagamento {
-  id             Int       @id @default(autoincrement())
-  pedidoId       Int       @unique
-  metodo         String
-  status         PagamentoStatus
-  valor          Float
-  dataPagamento  DateTime?
+model Payment {
+  id            Int       @id @default(autoincrement())
+  orderId       Int       @unique
+  method        String
+  status        PaymentStatus
+  amount        Float
+  paidAt        DateTime?
 
-  pedido         Pedido    @relation(fields: [pedidoId], references: [id])
+  order         Order     @relation(fields: [orderId], references: [id])
 }
 
-enum PagamentoStatus {
-  pago
-  pendente
-  cancelado
+enum PaymentStatus {
+  paid     @map("pago")
+  pending  @map("pendente")
+  canceled @map("cancelado")
 }
 
-model Avaliacao {
-  id             Int       @id @default(autoincrement())
-  usuarioId      Int
-  produtoId      Int
-  nota           Int
-  comentario     String?
-  dataAvaliacao  DateTime  @default(now())
+model Review {
+  id           Int       @id @default(autoincrement())
+  userId       Int
+  productId    Int
+  rating       Int
+  comment      String?
+  reviewedAt   DateTime   @default(now())
 
-  usuario        Usuario   @relation(fields: [usuarioId], references: [id])
-  produto        Produto   @relation(fields: [produtoId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
+  product      Product    @relation(fields: [productId], references: [id])
 }
 
-model Cupom {
-  id         Int       @id @default(autoincrement())
-  codigo     String    @unique
-  tipo       CupomTipo
-  valor      Float
-  ativo      Boolean   @default(true)
-  validade   DateTime
+model Coupon {
+  id        Int       @id @default(autoincrement())
+  code      String    @unique
+  type      CouponType
+  value     Float
+  isActive  Boolean   @default(true)
+  expiresAt DateTime
 }
 
-enum CupomTipo {
-  percentual
-  fixo
+enum CouponType {
+  percentage @map("percentual")
+  fixed      @map("fixo")
 }
