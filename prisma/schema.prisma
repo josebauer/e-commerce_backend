@@ -50,17 +50,24 @@ model Category {
 model Product {
   id            Int           @id @default(autoincrement())
   name          String
+  brand         String?
   description   String
   price         Float
   stock         Int
-  imageUrl      String
   isActive      Boolean       @default(true)
   categoryId    Int
 
   category      Category      @relation(fields: [categoryId], references: [id])
+  productImages ProductImage[]
   cartItems     CartItem[]
   orderItems    OrderItem[]
   reviews       Review[]
+}
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  url       String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
 }
 
 model Cart {
