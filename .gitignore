@@ -2,3 +2,4 @@
 /generated/prisma
 .env
 /.adminjs
+/public/images/

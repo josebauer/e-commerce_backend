@@ -2,11 +2,13 @@ import AdminJS from 'adminjs'
 import AdminJSExpress from '@adminjs/express'
 import { Database, Resource } from '@adminjs/prisma'
 import { adminJsResources } from './resources'
+import { componentLoader } from './components/index';
 
 AdminJS.registerAdapter({ Database, Resource })
 
 export const createAdminRouter = () => {
   const admin = new AdminJS({
+    componentLoader,
     rootPath: '/admin',
     resources: adminJsResources,
     branding: {
@@ -32,6 +34,8 @@ export const createAdminRouter = () => {
       }
     }
   })
+
+  admin.watch()
 
   const adminRouter = AdminJSExpress.buildRouter(admin)
   return { admin, adminRouter }
