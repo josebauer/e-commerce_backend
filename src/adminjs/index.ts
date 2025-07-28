@@ -27,8 +27,8 @@ export const createAdminRouter = () => {
           grey60: '#4d4d4d',
           grey40: '#666666',
           grey20: '#dddddd',
-          filterBg: '#333333',
-          accent: '#151515',
+          filterBg: '#ffffff',
+          accent: '#961818ff',
           hoverBg: '#151515',
         }
       }

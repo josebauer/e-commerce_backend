@@ -2,7 +2,7 @@ import { ResourceOptions } from "adminjs";
 
 export const categoryResourceOptions: ResourceOptions = {
   navigation: {
-    icon: 'Tag'
+    icon: 'Archive'
   },
   listProperties: ['id', 'name'],
   editProperties: ['name'],
