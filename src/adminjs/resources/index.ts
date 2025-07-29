@@ -4,6 +4,7 @@ import { getPrismaClient } from "../../database/prisma";
 import { getModelByName } from "@adminjs/prisma"
 import { productResourceFeatures, productResourceOptions } from "./product";
 import { couponResourceOptions } from "./coupon";
+import { userResourceOptions } from "./user";
 
 const prisma = getPrismaClient()
 
@@ -29,5 +30,12 @@ export const adminJsResources: ResourceWithOptions[] = [
       client: prisma
     },
     options: couponResourceOptions
+  },
+  {
+    resource: {
+      model: getModelByName('User'),
+      client: prisma
+    },
+    options: userResourceOptions
   }
 ]

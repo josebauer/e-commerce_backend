@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from "cors"
-import { createAdminRouter } from './adminjs'
+import { adminJs, adminJsRouter } from './adminjs'
 import { getPrismaClient } from './database/prisma'
 import { router } from './routes'
 
@@ -13,8 +13,7 @@ app.use(cors())
 app.use(express.static('public'))
 app.use(express.json())
 
-const { admin, adminRouter } = createAdminRouter()
-app.use(admin.options.rootPath, adminRouter)
+app.use(adminJs.options.rootPath, adminJsRouter)
 
 app.use(router)
 
