@@ -13,6 +13,12 @@ export const userResourceOptions: ResourceOptions = {
     password: {
       type: 'password'
     }, 
+    role: {
+      availableValues: [
+        { value: 'customer', label: 'Cliente' },
+        { value: 'admin', label: 'Administrador' },
+      ],
+    },
   },
 
   actions: {
@@ -22,7 +28,27 @@ export const userResourceOptions: ResourceOptions = {
           request.payload.password = await bcrypt.hash(request.payload.password, 10)
         }
         return request
-      }
+      },
+      layout: [
+        ['@Header', { children: 'Insira abaixo os dados do usuário' }],
+         [
+          { flexDirection: 'row', flex: true, flexWrap: 'wrap', marginTop: '3rem' },
+          [
+            ['name', { flexGrow: 1, mx: '5px' }],
+            ['lastName', { flexGrow: 1, mx: '5px' }],
+            ['cpf', { flexGrow: 1, mx: '5px' }],
+            ['email', { flexGrow: 1, mx: '5px' }]
+          ]
+        ],
+        [
+          { flexDirection: 'row', flex: true, flexWrap: 'wrap', marginTop: '3rem' },
+          [
+            ['password', { flexGrow: 1, mx: '5px' }],
+            ['phone', { flexGrow: 1, mx: '5px' }],
+            ['role', { flexGrow: 1, mx: '5px' }],
+          ]
+        ]
+      ]
     },
     edit: {
       before: async (request) => {
@@ -33,6 +59,6 @@ export const userResourceOptions: ResourceOptions = {
         }
         return request
       }
-    }
+    },
   }
 }

@@ -17,6 +17,12 @@ export const couponResourceOptions: ResourceOptions = {
       props: {
         placeholder: 'Insira apenas números'
       }
+    },
+    type: {
+      availableValues: [
+        { value: 'percentage', label: 'Percentual' },
+        { value: 'fixed', label: 'Fixo' },
+      ],
     }
   },
   actions: {

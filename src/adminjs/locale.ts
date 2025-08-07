@@ -59,6 +59,10 @@ export const locale: Locale = {
         from: 'De',
         to: 'Até',
         userId: 'Usuário',
+        code: 'Código',
+        type: 'Tipo',
+        value: 'Valor',
+        expiresAt: 'Expira em'
       },
       components: {
         Login: {
